@@ -4,6 +4,7 @@ A basic, unencrypted TCP File Transfer program - custom made to be fast and vers
 1) Navigate to the directory */FileTransfer/out/artifacts/FileTransfer_jar*
 2) Execute the jar file in that directory named *FileTransfer.jar*
 Terminal Command for all operating systems:
+
 ``` java -jar FileTransfer.jar```
 
 *Note Java must be installed on your machine for this to work.*
