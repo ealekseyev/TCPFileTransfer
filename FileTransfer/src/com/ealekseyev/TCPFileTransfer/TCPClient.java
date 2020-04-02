@@ -7,6 +7,7 @@ import java.net.Socket;
 
 public class TCPClient {
     public void send(String address, String path) throws Exception {
+        // TODO: have the machines send a status back at the end of transfer
         Thread getNameThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -38,7 +39,10 @@ public class TCPClient {
         });
 
         /*
+        ################################
         END INFO TRANSMISSION
+        START FILE TRANSMISSION
+        ################################
          */
 
         Thread sendFileThread = new Thread(new Runnable() {
@@ -55,38 +59,55 @@ public class TCPClient {
                     //Get socket's output stream
                     OutputStream outputStream = socket.getOutputStream();
 
-                    // Read File Contents into contents array
-                    byte[] contents;
-                    long fileLength = file.length();
-                    long current = 0;
+                    /*
+                    -----------START TRANSMISSION----------
+                     */
+
+                    // Read file contents into fileData array, then send it
+                    byte[] fileData;
+                    // file size (bytes)
+                    long fileSize = file.length();
+                    // amount of data read and sent (bytes)
+                    long dataSent = 0;
+                    // used for sending progress messages - amount of bytes sent
+                    long prevDataSent = 0;
+                    // length of packets to be sent (bytes)
+                    int packSize = Constants.bufLen;
 
                     // Send file
                     long start = System.currentTimeMillis();
-                    long prevCurrent = 0;
-                    while (current != fileLength) {
-                        int size = 30000;
-                        if (fileLength - current >= size)
-                            current += size;
+                    long prevCheckTime = System.currentTimeMillis(); // to calculate speed at percentage checkpoint
+                    System.out.println(Constants.YELLOW + "Sending file - 0% complete..." + Constants.RESET);
+                    while (dataSent != fileSize) {
+                        if (fileSize - dataSent >= packSize)
+                            dataSent += packSize;
                         else {
-                            size = (int) (fileLength - current);
-                            current = fileLength;
+                            packSize = (int) (fileSize - dataSent);
+                            dataSent = fileSize;
                         }
-                        contents = new byte[size];
-                        inputStream.read(contents, 0, size);
-                        outputStream.write(contents);
-                        if (((current * 100) / fileLength) - prevCurrent == 5) {
-                            System.out.println(Constants.YELLOW + "Sending file ... " + (current * 100) / fileLength + "% complete!" + Constants.RESET);
-                            prevCurrent = (current * 100) / fileLength;
+                        fileData = new byte[packSize];
+                        inputStream.read(fileData, 0, packSize);
+                        outputStream.write(fileData);
+                        if (((dataSent * 100) / fileSize) - ((prevDataSent * 100) / fileSize) == 5 && dataSent != fileSize) {
+                            System.out.print(Constants.YELLOW + "Sending file - " + (dataSent * 100) / fileSize + "% complete..." + Constants.RESET);
+                            System.out.printf(Constants.CYAN + " Speed: %.1f mbps\n" + Constants.RESET, ((dataSent-prevDataSent)/1000000.0) / ((System.currentTimeMillis() - prevCheckTime) / 1000.0));
+                            prevDataSent = dataSent;
+                            prevCheckTime = System.currentTimeMillis();
                         }
                     }
+                    System.out.println(Constants.YELLOW + "Sending file - 100% complete!" + Constants.RESET);
 
+                    /*
+                    -----------END TRANSMISSION----------
+                     */
+
+                    // close data streams
                     outputStream.flush();
                     socket.close();
 
                     // feedback - speed and time
-                    System.out.println(Constants.CYAN + "Done!" + Constants.RESET);
-                    System.out.printf(Constants.CYAN + "Total time elapsed: %d seconds\n" + Constants.RESET, (System.currentTimeMillis() - start) / 1000);
-                    System.out.printf(Constants.CYAN + "Approximate speed: %.1f kilobytes per second.\n" + Constants.RESET, (fileLength/1000.0) / ((System.currentTimeMillis() - start) / 1000.0));
+                    System.out.printf(Constants.CYAN + "Time elapsed: %.1f minutes\n" + Constants.RESET, (System.currentTimeMillis() - start) / 60000.0);
+                    System.out.printf(Constants.CYAN + "Average speed: %.1f megabytes per second.\n" + Constants.RESET, (fileSize/1000000.0) / ((System.currentTimeMillis() - start) / 1000.0));
                     System.out.println(Constants.GREEN + "Success!" + Constants.RESET);
                 } catch (Exception e) {
                     // print the stackTrace in ANSI_RED
