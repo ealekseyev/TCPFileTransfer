@@ -6,39 +6,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class TCPServer {
-    /*private String filePath = "";
-    private volatile String fileName = "~~NAN~~";
-    private volatile byte isDir = -2;
-    private volatile long fileSize = -2;*/
+    private String filePath = "";
+    private volatile String fileName = "";
+    private volatile long fileSize = 0;
     public void listen() throws Exception {
-        /*Thread getNameThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ServerSocket nameSock = new ServerSocket(Constants.namePort);
-                    Socket nameSockIn = nameSock.accept();
-                    DataInputStream nameIn = new DataInputStream(
-                            new BufferedInputStream(nameSockIn.getInputStream()));
-
-                    // get filename
-                    fileName = nameIn.readUTF();
-                    isDir = Byte.parseByte(nameIn.readUTF());
-                    fileSize = Long.parseLong(nameIn.readUTF());
-
-                    nameIn.close();
-                    nameSock.close();
-                    nameSockIn.close();
-                } catch (Exception e) {
-                    System.out.println(Constants.RED + e + Constants.RESET);
-                }
-            }
-        });*/
-
-        /*
-        ################################
-        END INFO RETRIEVAL
-        ################################
-         */
 
         // TODO: speedometer for server
         Thread getFileThread = new Thread(new Runnable() {
@@ -51,31 +22,13 @@ public class TCPServer {
                     System.out.println(Constants.YELLOW + "Incoming connection from " + socket.getRemoteSocketAddress().toString() + Constants.RESET);
 
                     // input stream from socket
-                    InputStream sockStream = socket.getInputStream();
+                    DataInputStream sockStream = new DataInputStream(socket.getInputStream());
 
-                    byte[] nameData = new byte[50];
-                    int nameLen = sockStream.read(nameData);
-                    String fileName = "";
-                    for(byte i: nameData) {
-                        if(i == 0) {
-                            break;
-                        }
-                        fileName += (char) i;
-                    }
-                    System.out.println(fileName);
-
-                    /*byte[] sizeData = new byte[20];
-                    int sizeLen = sockStream.read(nameData);
-                    String fileSizeTemp = "";
-                    long fileSize = 0;
-                    for(byte i: nameData) {
-                        fileSizeTemp += (char) i;
-                    }
-                    System.out.println(fileSizeTemp);*/
-
+                    String fileName = sockStream.readUTF();
+                    fileSize = sockStream.readLong();
 
                     // check if file exists, change name if necessary
-                    String filePath = System.getenv("HOME") + "/Downloads/";
+                    filePath = System.getenv("HOME") + "/Downloads/";
                     while(true) {
                         if (new File(filePath + fileName).exists()) {
                             fileName = OtherFunctions.newFileName(fileName);
@@ -84,11 +37,6 @@ public class TCPServer {
                             break;
                         }
                     }
-                    long fileSize = 65000000;
-
-                    // wait for the getNameThread thread to finish and spit out file info
-                    //while(fileName.equals("~~NAN~~")){}
-                    //System.out.println(Constants.CYAN + "File Name: " + fileName + Constants.RESET);
 
                     //Initialize the FileOutputStream to the output file's full path.
                     BufferedOutputStream outputStream = new BufferedOutputStream(
@@ -125,7 +73,7 @@ public class TCPServer {
                         }
                     }
                     if(dataRecv != fileSize) {
-                        System.out.println(Constants.RED + "An error occurred during receival of " + fileName + "." + Constants.RESET);
+                        System.out.println(Constants.RED + "An error occurred during retreival of " + fileName + "." + Constants.RESET);
                         System.exit(0);
                     }
                     System.out.println(Constants.YELLOW + "Recieving file - 100% complete!" + Constants.RESET);

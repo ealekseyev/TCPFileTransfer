@@ -8,34 +8,6 @@ import java.net.Socket;
 public class TCPClient {
     public void send(String address, String path) throws Exception {
         // TODO: have the machines send a status back at the end of transfer
-        /*Thread getNameThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Socket nameSock = new Socket(address, Constants.namePort);
-                    DataOutputStream nameOutput = new DataOutputStream(nameSock.getOutputStream());
-
-                    String name = path.split("/")[path.split("/").length - 1];
-                    nameOutput.writeUTF(name);
-                    // its length
-                    nameOutput.writeUTF(Long.toString(new File(path).length()));
-
-                    nameOutput.flush();
-                    nameOutput.close();
-                    nameSock.close();
-                } catch (Exception e) {
-                    // print the stackTrace in ANSI_RED
-                    System.out.println(Constants.RED + e + Constants.RESET);
-                }
-            }
-        });*/
-
-        /*
-        ################################
-        END INFO TRANSMISSION
-        START FILE TRANSMISSION
-        ################################
-         */
 
         Thread sendFileThread = new Thread(new Runnable() {
             @Override
@@ -44,23 +16,23 @@ public class TCPClient {
                     //Initialize socket
                     Socket socket = new Socket(address, Constants.port);
 
-                    String name = path.split("/")[path.split("/").length - 1];
+                    String fileName = path.split("/")[path.split("/").length - 1];
 
                     //Specify the file
                     File file = new File(path);
                     BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
 
                     //Get socket's output stream
-                    OutputStream outputStream = socket.getOutputStream();
+                    DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
 
                     /*
                     -----------START TRANSMISSION----------
                      */
 
                     // name
-                    outputStream.write(name.getBytes("UTF-8"));
+                    outputStream.writeUTF(fileName);
                     // length
-                    //outputStream.write(Long.toString(new File(path).length()).getBytes());
+                    outputStream.writeLong(new File(path).length());
 
 
                     // Read file contents into fileData array, then send it
