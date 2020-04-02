@@ -8,7 +8,7 @@ import java.net.Socket;
 public class TCPClient {
     public void send(String address, String path) throws Exception {
         // TODO: have the machines send a status back at the end of transfer
-        Thread getNameThread = new Thread(new Runnable() {
+        /*Thread getNameThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -17,18 +17,10 @@ public class TCPClient {
 
                     String name = path.split("/")[path.split("/").length - 1];
                     nameOutput.writeUTF(name);
+                    // its length
+                    nameOutput.writeUTF(Long.toString(new File(path).length()));
 
-                    // if it is directory, also send length
-                    byte isDir = 0;
-                    if (new File(path).isDirectory()) {
-                        isDir = 1;
-                        nameOutput.writeUTF(Byte.toString(isDir));
-                        nameOutput.writeUTF("-1");
-                    } else {
-                        nameOutput.writeUTF(Byte.toString(isDir));
-                        // its length
-                        nameOutput.writeUTF(Long.toString(new File(path).length()));
-                    }
+                    nameOutput.flush();
                     nameOutput.close();
                     nameSock.close();
                 } catch (Exception e) {
@@ -36,7 +28,7 @@ public class TCPClient {
                     System.out.println(Constants.RED + e + Constants.RESET);
                 }
             }
-        });
+        });*/
 
         /*
         ################################
@@ -52,6 +44,8 @@ public class TCPClient {
                     //Initialize socket
                     Socket socket = new Socket(address, Constants.port);
 
+                    String name = path.split("/")[path.split("/").length - 1];
+
                     //Specify the file
                     File file = new File(path);
                     BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
@@ -62,6 +56,12 @@ public class TCPClient {
                     /*
                     -----------START TRANSMISSION----------
                      */
+
+                    // name
+                    outputStream.write(name.getBytes("UTF-8"));
+                    // length
+                    //outputStream.write(Long.toString(new File(path).length()).getBytes());
+
 
                     // Read file contents into fileData array, then send it
                     byte[] fileData;
@@ -116,7 +116,7 @@ public class TCPClient {
             }
         });
 
-        getNameThread.start();
+        //getNameThread.start();
         sendFileThread.start();
     }
 }

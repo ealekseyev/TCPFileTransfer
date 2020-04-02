@@ -2,7 +2,7 @@ package com.ealekseyev.TCPFileTransfer;
 
 public class Constants {
     public static final int port = 30000;
-    public static final int namePort = 30001;
+    public static final int namePort = 30000;
     public static final int bufLen = 30000;
     public static final String RESET = "\u001B[0m";
     public static final String BLACK = "\u001B[30m";
