@@ -1,5 +1,8 @@
 package com.ealekseyev.TCPFileTransfer;
 
+import java.util.*;
+import java.io.*;
+
 public class OtherFunctions {
     public static String newFileName(String fileName) {
         fileName = fileName.strip();
@@ -41,6 +44,34 @@ public class OtherFunctions {
         }
         //System.out.println(fileName);
         return fileName;
+    }
+
+    // add functionality for empty folders
+    public static ArrayList<String> folderScanner(String path) throws Exception {
+        ArrayList<String> filePaths = new ArrayList<>();
+        String name = path.split("/")[path.split("/").length - 1];
+
+        File folder = new File(path);
+        File[] children = folder.listFiles();
+
+        for(File child: children) {
+            // if it is a directory
+            if(child.isDirectory()) {
+                // if it is an empty directory
+                if(child.list().length == 0) {
+                    // indicate it is an empty directory with .EMDIR for server
+                    filePaths.add(child.getPath() + "/EMDIR");
+                    new File(child.getPath() + "/EMDIR").createNewFile();
+                } else {
+                    // recursively find all nested files
+                    filePaths.addAll(folderScanner(child.getPath()));
+                }
+            } else {
+                // if not a directory, append the file
+                filePaths.add(child.getPath());
+            }
+        }
+        return filePaths;
     }
 }
 

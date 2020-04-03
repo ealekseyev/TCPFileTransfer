@@ -1,7 +1,8 @@
 package com.ealekseyev.TCPFileTransfer;
 
 import java.io.File;
-import java.util.Scanner;
+import java.util.*;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -35,11 +36,34 @@ public class Main {
     }
 
     private static void selectClient(Scanner scanner) {
+        // get and format path
         System.out.print("Full path of file to be sent > ");
         String path = scanner.nextLine().strip();
         if(!(System.getProperty("os.name").toLowerCase().indexOf("win") >= 0)) {
             path = path.replaceAll("\\\\", "");
         }
+        // check if it exists, break if not
+        if(!new File(path).exists()) {
+            System.out.println("E: no such file or directory");
+            System.exit(0);
+        }
+        // separate into directory and file
+        if(new File(path).isDirectory()) {
+            System.out.println("File type: directory");
+            try {
+                System.out.println("Children:");
+                ArrayList<String> children = OtherFunctions.folderScanner(path);
+                for (String child : children) {
+                    System.out.println("\t" + child);
+                }
+            } catch (Exception e) {
+                System.out.println(Constants.RED + "E: could not fetch directory listing" + Constants.RESET);
+                System.out.println(Constants.RED + e + Constants.RESET);
+            }
+        } else {
+            System.out.println("File type: file");
+        }
+        // get IP address of server/listener
         System.out.print("IP Address of server > ");
         String address = scanner.nextLine().strip();
         try {
@@ -47,16 +71,6 @@ public class Main {
         } catch (Exception e) {
             System.out.println(Constants.RED + e + Constants.RESET);
         }
-        /*try {
-            if(new File(path).isDirectory() && !path.contains(".zip")) {
-                FileZipper.zipDirectory(new File(path), path+".zip");
-                new TCPClient().send(address, path+".zip");
-            } else {
-                new TCPClient().send(address, path);
-            }
-        } catch (Exception e) {
-            System.out.println(Constants.RED + e + Constants.RESET);
-        }*/
     }
 
     private static void selectServer() {
