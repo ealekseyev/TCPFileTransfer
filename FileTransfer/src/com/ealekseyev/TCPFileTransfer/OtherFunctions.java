@@ -73,5 +73,22 @@ public class OtherFunctions {
         }
         return filePaths;
     }
+    public static String getFirstEntry(String path) {
+        if(path.charAt(0) == '/') {
+            return path.split("/")[1];
+        }
+        return path.split("/")[0];
+    }
+    public static String getLastEntry(String path) {
+        return path.split("/")[path.split("/").length-1];
+    }
+    public static String stripFirstEntry(String path) {
+        // ensure it doesn't get stuck at a slash
+        path = path.substring(1);
+        return path.substring(path.indexOf("/")+1);
+    }
+    public static String stripLastEntry(String path) {
+        return path.substring(0, path.lastIndexOf("/"));
+    }
 }
 

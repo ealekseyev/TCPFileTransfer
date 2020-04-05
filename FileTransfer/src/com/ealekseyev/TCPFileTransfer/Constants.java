@@ -3,6 +3,11 @@ package com.ealekseyev.TCPFileTransfer;
 public class Constants {
     public static final int port = 29999;
     public static final int bufLen = 30000;
+
+    public static final byte doneSending = 1;
+    public static final byte notDoneSending = 0;
+
+
     public static final String RESET = "\u001B[0m";
     public static final String BLACK = "\u001B[30m";
     public static final String RED = "\u001B[31m";
