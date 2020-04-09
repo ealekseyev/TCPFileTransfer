@@ -7,8 +7,12 @@ import java.net.Socket;
 
 public class TCPServer {
     private String filePath = "";
-    private volatile String fileName = "";
-    private volatile long fileSize = 0;
+    private String fileName = "";
+    private long fileSize = -1;
+
+    public TCPServer() {
+
+    }
     public void listen() throws Exception {
         try {
             //Initialize Sockets
@@ -20,19 +24,13 @@ public class TCPServer {
             DataInputStream sockStream = new DataInputStream(socket.getInputStream());
 
             // get info
-            String fileName = sockStream.readUTF();
+            fileName = sockStream.readUTF();
             fileSize = sockStream.readLong();
+            
 
             // check if file exists, change name if necessary
             filePath = System.getenv("HOME") + "/Downloads/";
-            while(true) {
-                if (new File(filePath + fileName).exists()) {
-                    fileName = OtherFunctions.newFileName(fileName);
-                } else {
-                    filePath += fileName;
-                    break;
-                }
-            }
+            verifyName(filePath + OtherFunctions.getFirstEntry(fileName));
 
             //Initialize the FileOutputStream to the output file's full path.
             BufferedOutputStream outputStream = new BufferedOutputStream(
@@ -90,6 +88,17 @@ public class TCPServer {
             System.out.println(Constants.GREEN + "Success!" + Constants.RESET);
         } catch (Exception e) {
             System.out.println(Constants.RED + e + Constants.RESET);
+        }
+    }
+    private String verifyName(String pathToFile) {
+        String tempPath = OtherFunctions.stripLastEntry(pathToFile);
+        String tempFileName = OtherFunctions.getLastEntry(pathToFile);
+        while(true) {
+            if (new File(pathToFile).exists()) {
+                tempFileName = OtherFunctions.newFileName(tempFileName);
+            } else {
+                return tempPath + "/" + tempFileName;
+            }
         }
     }
 }
