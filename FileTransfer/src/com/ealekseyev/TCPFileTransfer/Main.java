@@ -61,7 +61,7 @@ public class Main {
                 System.out.println(Constants.RED + e + Constants.RESET);
             }
         } else {
-            System.out.println("File type: file");
+
         }
         // get IP address of server/listener
         System.out.print("IP Address of server > ");

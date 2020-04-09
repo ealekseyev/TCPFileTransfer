@@ -16,19 +16,20 @@ public class TCPClient {
 
             //Specify the file
             File file = new File(path);
-            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+            BufferedInputStream fileIn = new BufferedInputStream(new FileInputStream(file));
 
             //Get socket's output stream
-            DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+            DataOutputStream sockOut = new DataOutputStream(socket.getOutputStream());
+            DataInputStream sockIn = new DataInputStream(socket.getInputStream());
 
             /*
             -----------START TRANSMISSION----------
              */
 
             // name
-            outputStream.writeUTF(fileName);
+            sockOut.writeUTF(fileName);
             // length
-            outputStream.writeLong(file.length());
+            sockOut.writeLong(file.length());
             long fileSize = file.length();
 
             if(fileSize < 1000) {
@@ -63,8 +64,8 @@ public class TCPClient {
                     dataSent = fileSize;
                 }
                 fileData = new byte[packSize];
-                inputStream.read(fileData, 0, packSize);
-                outputStream.write(fileData);
+                fileIn.read(fileData, 0, packSize);
+                sockOut.write(fileData);
                 if (((dataSent * 100) / fileSize) - ((prevDataSent * 100) / fileSize) == 5 && dataSent != fileSize) {
                     System.out.print(Constants.YELLOW + "Sending file - " + (dataSent * 100) / fileSize + "% complete..." + Constants.RESET);
                     System.out.printf(Constants.CYAN + " Speed: %.1f mbps\n" + Constants.RESET, ((dataSent-prevDataSent)/1000000.0) / ((System.currentTimeMillis() - prevCheckTime) / 1000.0));
@@ -74,18 +75,26 @@ public class TCPClient {
             }
             System.out.println(Constants.YELLOW + "Sending file - 100% complete!" + Constants.RESET);
 
+            byte success = sockIn.readByte();
+            if(success == 0) {
+                System.out.println(Constants.RED + "E: Server side error occurred" + Constants.RESET);
+                System.exit(0);
+            } else {
+                System.out.println(Constants.GREEN + "Success!" + Constants.RESET);
+            }
+
             /*
             -----------END TRANSMISSION----------
              */
 
             // close data streams
-            outputStream.flush();
+            sockOut.flush();
+            sockOut.close();
             socket.close();
 
             // feedback - speed and time
             System.out.printf(Constants.CYAN + "Time elapsed: %.1f minutes\n" + Constants.RESET, (System.currentTimeMillis() - start) / 60000.0);
             System.out.printf(Constants.CYAN + "Average speed: %.1f megabytes per second.\n" + Constants.RESET, (fileSize/1000000.0) / ((System.currentTimeMillis() - start) / 1000.0));
-            System.out.println(Constants.GREEN + "Success!" + Constants.RESET);
         } catch (Exception e) {
             // print the stackTrace in ANSI_RED
             System.out.println(Constants.RED + e + Constants.RESET);
