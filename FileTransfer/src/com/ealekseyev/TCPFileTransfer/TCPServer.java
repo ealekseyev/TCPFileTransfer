@@ -38,11 +38,11 @@ public class TCPServer {
             if(fileSize < 1000) {
                 System.out.println("File size: " + Constants.CYAN + Long.toString(fileSize) + " bytes" + Constants.RESET);
             } else if(fileSize < 500000 && fileSize >= 1000) {
-                System.out.printf("File size: " + Constants.CYAN + "%0.1f kilobytes" + Constants.RESET + "\n", fileSize/1000.0);
+                System.out.printf("File size: " + Constants.CYAN + "%.1f kilobytes" + Constants.RESET + "\n", fileSize/1000.0);
             } else if(fileSize < 500000000 && fileSize >= 500000) {
-                System.out.printf("File size: " + Constants.CYAN + "%0.1f megabytes" + Constants.RESET + "\n", fileSize/1000000.0);
+                System.out.printf("File size: " + Constants.CYAN + "%.1f megabytes" + Constants.RESET + "\n", fileSize/1000000.0);
             } else if(fileSize >= 500000000) {
-                System.out.printf("File size: " + Constants.CYAN + "%0.1f gigabytes" + Constants.RESET + "\n", fileSize/1000000000.0);
+                System.out.printf("File size: " + Constants.CYAN + "%.1f gigabytes" + Constants.RESET + "\n", fileSize/1000000000.0);
             }
 
             // TODO: for sending directories, simply send the file and its path.
