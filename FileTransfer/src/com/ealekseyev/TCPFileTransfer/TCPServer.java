@@ -26,7 +26,6 @@ public class TCPServer {
             // get info
             fileName = sockStream.readUTF();
             fileSize = sockStream.readLong();
-            
 
             // check if file exists, change name if necessary
             filePath = System.getenv("HOME") + "/Downloads/";
@@ -35,8 +34,16 @@ public class TCPServer {
             //Initialize the FileOutputStream to the output file's full path.
             BufferedOutputStream outputStream = new BufferedOutputStream(
                     new FileOutputStream(filePath));
-            System.out.printf(Constants.CYAN + "File Size: %.1f kilobytes\n" + Constants.RESET, fileSize/1000.0);
             System.out.println("Saving file to " + filePath);
+            if(fileSize < 1000) {
+                System.out.println("File size: " + Constants.CYAN + Long.toString(fileSize) + " bytes" + Constants.RESET);
+            } else if(fileSize < 500000 && fileSize >= 1000) {
+                System.out.printf("File size: " + Constants.CYAN + "%0.1f kilobytes" + Constants.RESET + "\n", fileSize/1000.0);
+            } else if(fileSize < 500000000 && fileSize >= 500000) {
+                System.out.printf("File size: " + Constants.CYAN + "%0.1f megabytes" + Constants.RESET + "\n", fileSize/1000000.0);
+            } else if(fileSize >= 500000000) {
+                System.out.printf("File size: " + Constants.CYAN + "%0.1f gigabytes" + Constants.RESET + "\n", fileSize/1000000000.0);
+            }
 
             // TODO: for sending directories, simply send the file and its path.
             // TODO: If the path does not exist, create the required folders automatically.

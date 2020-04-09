@@ -28,13 +28,22 @@ public class TCPClient {
             // name
             outputStream.writeUTF(fileName);
             // length
-            outputStream.writeLong(new File(path).length());
+            outputStream.writeLong(file.length());
+            long fileSize = file.length();
+
+            if(fileSize < 1000) {
+                System.out.println("File size: " + Constants.CYAN + Long.toString(fileSize) + " bytes" + Constants.RESET);
+            } else if(fileSize < 500000 && fileSize >= 1000) {
+                System.out.printf("File size: " + Constants.CYAN + "%0.1f kilobytes" + Constants.RESET + "\n", fileSize/1000.0);
+            } else if(fileSize < 500000000 && fileSize >= 500000) {
+                System.out.printf("File size: " + Constants.CYAN + "%0.1f megabytes" + Constants.RESET + "\n", fileSize/1000000.0);
+            } else if(fileSize >= 500000000) {
+                System.out.printf("File size: " + Constants.CYAN + "%0.1f gigabytes" + Constants.RESET + "\n", fileSize/1000000000.0);
+            }
 
 
             // Read file contents into fileData array, then send it
             byte[] fileData;
-            // file size (bytes)
-            long fileSize = file.length();
             // amount of data read and sent (bytes)
             long dataSent = 0;
             // used for sending progress messages - amount of bytes sent
