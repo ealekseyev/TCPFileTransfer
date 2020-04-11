@@ -3,7 +3,7 @@ package com.ealekseyev.TCPFileTransfer;
 import java.util.*;
 import java.io.*;
 
-public class OtherFunctions {
+public class OF {
     // not an entire path
     public static String newFileName(String fileName) {
         fileName = fileName.strip();
@@ -90,6 +90,18 @@ public class OtherFunctions {
     }
     public static String stripLastEntry(String path) {
         return path.substring(0, path.lastIndexOf("/"));
+    }
+
+    public static void printSize(long fileSize) {
+        if(fileSize < 1000) {
+            System.out.println("File size: " + Constants.CYAN + Long.toString(fileSize) + " bytes" + Constants.RESET);
+        } else if(fileSize < 500000 && fileSize >= 1000) {
+            System.out.printf("File size: " + Constants.CYAN + "%.1f kilobytes" + Constants.RESET + "\n", fileSize/1000.0);
+        } else if(fileSize < 500000000 && fileSize >= 500000) {
+            System.out.printf("File size: " + Constants.CYAN + "%.1f megabytes" + Constants.RESET + "\n", fileSize/1000000.0);
+        } else if(fileSize >= 500000000) {
+            System.out.printf("File size: " + Constants.CYAN + "%.1f gigabytes" + Constants.RESET + "\n", fileSize/1000000000.0);
+        }
     }
 }
 

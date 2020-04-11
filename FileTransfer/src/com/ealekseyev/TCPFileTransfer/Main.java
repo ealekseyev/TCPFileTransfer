@@ -52,7 +52,7 @@ public class Main {
             System.out.println("File type: directory");
             try {
                 System.out.println("Children:");
-                ArrayList<String> children = OtherFunctions.folderScanner(path);
+                ArrayList<String> children = OF.folderScanner(path);
                 for (String child : children) {
                     System.out.println("\t" + child);
                 }
