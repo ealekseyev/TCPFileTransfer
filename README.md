@@ -28,6 +28,6 @@ This will tell the program to go into client mode, where you input the full path
   ## Reference
   * The recieved file is stored in the Downloads folder in your home directory.
   * If a file to be recieved has the same name as an existing file in `Downloads`, the sent file name will automatically be changed.
-  * This program uses **port 30000** for *file transmission* and **port 30001** for *file info transmission* - these constants are located in `Constants.java`.
+  * This program uses **port 30000** to 1st) *send file size and name* and then 2nd) *file transmission*. This constant is located in `Constants.java`.
   * This program currently sends completely unencrypted TCP packets.
   * **DO NOT USE THIS ON UNSECURED NETWORKS OR ACROSS THE GLOBAL WAN FOR YOUR OWN SECURITY.**
