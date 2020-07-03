@@ -2,6 +2,7 @@ package com.ealekseyev.TCPFileTransfer;
 
 import java.util.*;
 import java.io.*;
+import java.io.InvalidObjectException;
 
 public class OF {
     // not an entire path
@@ -101,6 +102,19 @@ public class OF {
             System.out.printf("File size: " + Constants.CYAN + "%.1f megabytes" + Constants.RESET + "\n", fileSize/1000000.0);
         } else if(fileSize >= 500000000) {
             System.out.printf("File size: " + Constants.CYAN + "%.1f gigabytes" + Constants.RESET + "\n", fileSize/1000000000.0);
+        }
+    }
+
+    public static ArrayList<File> getFileTree(File dir) throws InvalidObjectException {
+        ArrayList<File> files = new ArrayList<File>();
+        if(!dir.isDirectory()) {
+            throw new InvalidObjectException("File object passed was not a directory");
+        } else {
+            for(File f: dir.listFiles())
+                files.add(f);
+            while(true) {
+
+            }
         }
     }
 }
